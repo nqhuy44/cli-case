@@ -1,0 +1,62 @@
+-   name: ohmyzsh
+    description: ohmyzsh
+    more_info: https://github.com/ohmyzsh/ohmyzsh
+    prequisites:
+      - zsh
+    pre_install_command: |-
+        # Check if Oh My Zsh is already installed
+        if [ -d "$HOME/.oh-my-zsh" ]; then
+            # echo "Oh My Zsh is already installed."
+            return 1
+        fi
+    install_command: |
+        sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+    post_install_command: |
+        echo "Post install commands"
+    post_install_message: |
+        Oh My Zsh is installed.
+    uninstall_command:
+
+-   name: zshsuggestion
+    description: Fish-like fast/unobtrusive autosuggestions for zsh.
+    more_info: https://github.com/zsh-users/zsh-autosuggestions
+    prequisites:
+      - ohmyzsh
+    pre_install_command: |-
+        # Check if oh-my-zsh is installed
+        if [ ! -d "$HOME/.oh-my-zsh" ]; then
+            echo "Oh My Zsh is not installed. Please install it first."
+            return 1
+        fi
+        if [ -d "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions" ]; then
+            echo "zsh-autosuggestions is already installed."
+            return 1
+        fi
+    install_command: |-
+        echo "Installing zsh-autosuggestions by Oh My Zsh"
+        git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+        # Add the plugin to the list of plugins for Oh My Zsh to load (inside ~/.zshrc):
+        sed -i '' 's/^plugins=(/plugins=(zsh-autosuggestions /' ~/.zshrc
+    post_install_commands: |
+        source ~/.zshrc
+    post_install_message: |
+        zsh-autosuggestions is installed.
+
+-   name: just
+    description: Just a command runner
+    more_info:
+    prequisites:
+    pre_install_command: |-
+        # Check if Just is already installed, if exists then return 1
+        if command -v just > /dev/null 2>&1; then
+            echo "Just is already installed."
+            return 1
+        fi
+    install_command: |
+        brew install just
+    post_install_commands: |
+        echo "Post install commands"
+    post_install_message: |
+        Just is installed.
+    uninstall_command: |
+        brew uninstall just
