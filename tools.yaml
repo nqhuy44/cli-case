@@ -1,6 +1,7 @@
 -   name: ohmyzsh
     description: ohmyzsh
     more_info: https://github.com/ohmyzsh/ohmyzsh
+    category: shell
     prequisites:
       - zsh
     pre_install_command: |
@@ -18,6 +19,7 @@
 
 -   name: zshsuggestion
     description: Fish-like fast/unobtrusive autosuggestions for zsh.
+    category: shell
     more_info: https://github.com/zsh-users/zsh-autosuggestions
     prequisites:
       - ohmyzsh
@@ -37,11 +39,27 @@
         sed -i '' 's/^plugins=(/plugins=(zsh-autosuggestions /' ~/.zshrc
     post_install_commands: |
         source ~/.zshrc
-    post_install_message: |
-        zsh-autosuggestions is installed.
+    post_install_message:
+
+-   name: fzf
+    description: fzf is a general-purpose command-line fuzzy finder.
+    more_info: https://github.com/junegunn/fzf
+    category: shell
+    prequisites:
+    pre_install_command: |
+        # Check if fzf is already installed, if exists then return 1
+        if command -v fzf > /dev/null 2>&1; then
+            echo "fzf is already installed."
+            PRE_INSTALL=1
+        fi
+    install_command: |
+        brew install fzf
+    post_install_commands: 
+    post_install_message:
 
 -   name: just
     description: Just a command runner
+    category: shell
     more_info:
     prequisites:
     pre_install_command: |
@@ -56,3 +74,321 @@
     post_install_message: 
     uninstall_command: |
         brew uninstall just
+
+-   name: kubectl
+    description: Kubernetes command-line tool
+    category: kubernetes
+    more_info: https://kubernetes.io/docs/tasks/tools/install-kubectl/
+    prequisites:
+    pre_install_command: |
+        # Check if kubectl is already installed, if exists then return 1
+        if command -v kubectl > /dev/null 2>&1; then
+            echo "kubectl is already installed."
+            PRE_INSTALL=1
+        fi
+    install_command: |
+        brew install kubectl
+    post_install_commands:
+    post_install_message:
+    uninstall_command: |
+        brew uninstall kubectl
+
+-   name: kubectx
+    description: Faster way to switch between clusters and namespaces in kubectl
+    category: kubernetes
+    more_info:
+    prequisites:
+        - kubectl
+    pre_install_command: |
+        # Check if kubectl is already installed, if exists then return 1
+        if ! command -v kubectl > /dev/null 2>&1; then
+            echo "kubectl is not installed. Please install it first."
+            PRE_INSTALL=1
+        fi
+        # Check if kubectx is already installed, if exists then return 1
+        if command -v kubectx > /dev/null 2>&1; then
+            echo "kubectx is already installed."
+            PRE_INSTALL=1
+        fi
+    install_command: |
+        brew install kubectx
+    post_install_commands:
+    post_install_message:
+    uninstall_command: |
+        brew uninstall kubectx
+
+-   name: kustomize
+    description: Customization of kubernetes YAML configurations
+    category: kubernetes
+    more_info: https://kubectl.docs.kubernetes.io/pages/examples/kustomize.html
+    prequisites:
+        - kubectl
+    pre_install_command: |
+        # Check if kubectl is already installed, if exists then return 1
+        if ! command -v kubectl > /dev/null 2>&1; then
+            echo "kubectl is not installed. Please install it first."
+            PRE_INSTALL=1
+        fi
+        # Check if kustomize is already installed, if exists then return 1
+        if command -v kustomize > /dev/null 2>&1; then
+            echo "kustomize is already installed."
+            PRE_INSTALL=1
+        fi
+    install_command: |
+        brew install kustomize
+    post_install_commands:
+    post_install_message:
+    uninstall_command: |
+        brew uninstall kustomize
+
+-   name: helm
+    description: The package manager for Kubernetes
+    category: kubernetes
+    more_info: https://helm.sh/
+    prequisites:
+        - kubectl
+    pre_install_command: |
+        # Check if kubectl is already installed, if exists then return 1
+        if ! command -v kubectl > /dev/null 2>&1; then
+            echo "kubectl is not installed. Please install it first."
+            PRE_INSTALL=1
+        fi
+        # Check if helm is already installed, if exists then return 1
+        if command -v helm > /dev/null 2>&1; then
+            echo "helm is already installed."
+            PRE_INSTALL=1
+        fi
+    install_command: |
+        brew install helm
+    post_install_commands:
+    post_install_message:
+    uninstall_command: |
+        brew uninstall helm
+
+-   name: helmfile
+    description: Deploy Kubernetes Helm Charts
+    category: kubernetes
+    more_info:
+    prequisites:
+        - helm
+        - kubeclt
+    pre_install_command: |
+        # Check if kubectl is already installed, if exists then return 1
+        if ! command -v kubectl > /dev/null 2>&1; then
+            echo "kubectl is not installed. Please install it first."
+            PRE_INSTALL=1
+        fi
+        # Check if helm is already installed, if exists then return 1
+        if ! command -v helm > /dev/null 2>&1; then
+            echo "helm is not installed. Please install it first."
+            PRE_INSTALL=1
+        fi
+        # Check if helmfile is already installed, if exists then return 1
+        if command -v helmfile > /dev/null 2>&1; then
+            echo "helmfile is already installed."
+            PRE_INSTALL=1
+        fi
+    install_command: |
+        brew install helmfile
+    post_install_commands:
+    post_install_message:
+    uninstall_command: |
+        brew uninstall helmfile
+
+-   name: nvm
+    description: Node Version Manager
+    category: ide
+    more_info:
+    prequisites:
+    pre_install_command: |
+        # Check if nvm is already installed, if exists then return 1
+        if command -v nvm > /dev/null 2>&1; then
+            echo "nvm is already installed."
+            PRE_INSTALL=1
+        fi
+    install_command: |
+        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
+    post_install_commands:
+    post_install_message:
+    uninstall_command: |
+        rm -rf $NVM_DIR ~/.nvm ~/.npm ~/.bower
+
+-   name: tfenv
+    description: Terraform Version Manager
+    category: infra
+    more_info:
+    prequisites:
+    pre_install_command: |
+        # Check if tfenv is already installed, if exists then return 1
+        if command -v tfenv > /dev/null 2>&1; then
+            echo "tfenv is already installed."
+            PRE_INSTALL=1
+        fi
+    install_command: |
+        brew install tfenv
+    post_install_commands:
+    post_install_message:
+    uninstall_command: |
+        brew uninstall tfenv
+
+-   name: opentofu
+    description: Open source Tofu
+    category: infra
+    more_info:
+    prequisites:
+    pre_install_command: |
+        # Check if opentofu is already installed, if exists then return 1
+        if command -v opentofu > /dev/null 2>&1; then
+            echo "opentofu is already installed."
+            PRE_INSTALL=1
+        fi
+    install_command: |
+        brew install opentofu
+    post_install_commands:
+    post_install_message:
+    uninstall_command: |
+        brew uninstall opentofu
+
+-   name: pulumi
+    description: Pulumi CLI
+    category: infra
+    more_info:
+    prequisites:
+    pre_install_command: |
+        # Check if pulumi is already installed, if exists then return 1
+        if command -v pulumi > /dev/null 2>&1; then
+            echo "pulumi is already installed."
+            PRE_INSTALL=1
+        fi
+    install_command: |
+        brew install pulumi
+    post_install_commands:
+    post_install_message:
+    uninstall_command: |
+        brew uninstall pulumi
+
+-   name: awscli
+    description: AWS Command Line Interface
+    category: cloud
+    more_info:
+    prequisites:
+    pre_install_command: |
+        # Check if awscli is already installed, if exists then return 1
+        if command -v aws > /dev/null 2>&1; then
+            echo "awscli is already installed."
+            PRE_INSTALL=1
+        fi
+    install_command: |
+        brew install awscli
+    post_install_commands:
+    post_install_message:
+    uninstall_command: |
+        brew uninstall awscli
+
+-   name: azure-cli
+    description: Azure Command Line Interface
+    category: cloud
+    more_info:
+    prequisites:
+    pre_install_command: |
+        # Check if azure-cli is already installed, if exists then return 1
+        if command -v az > /dev/null 2>&1; then
+            echo "azure-cli is already installed."
+            PRE_INSTALL=1
+        fi
+    install_command: |
+        brew install azure-cli
+    post_install_commands:
+    post_install_message:
+    uninstall_command: |
+        brew uninstall azure-cli
+    
+-   name: gcloud
+    description: Google Cloud SDK
+    category: cloud
+    more_info:
+    prequisites:
+    pre_install_command: |
+        # Check if gcloud is already installed, if exists then return 1
+        if command -v gcloud > /dev/null 2>&1; then
+            echo "gcloud is already installed."
+            PRE_INSTALL=1
+        fi
+    install_command: |
+        brew install google-cloud-sdk
+    post_install_commands:
+    post_install_message:
+    uninstall_command: |
+        brew uninstall google-cloud-sdk
+
+-   name: openssl
+    description: Secure Sockets Layer toolkit
+    category: security
+    more_info:
+    prequisites:
+    pre_install_command: |
+        # Check if openssl is already installed, if exists then return 1
+        if command -v openssl > /dev/null 2>&1; then
+            echo "openssl is already installed."
+            PRE_INSTALL=1
+        fi
+    install_command: |
+        brew install openssl
+    post_install_commands:
+    post_install_message:
+    uninstall_command: |
+        brew uninstall openssl
+
+-   name: telnet
+    description: Telnet client
+    category: network
+    more_info:
+    prequisites:
+    pre_install_command: |
+        # Check if telnet is already installed, if exists then return 1
+        if command -v telnet > /dev/null 2>&1; then
+            echo "telnet is already installed."
+            PRE_INSTALL=1
+        fi
+    install_command: |
+        brew install telnet
+    post_install_commands:
+    post_install_message:
+    uninstall_command: |
+        brew uninstall telnet
+
+-   name: wget
+    description: Internet file retriever
+    category: network
+    more_info:
+    prequisites:
+    pre_install_command: |
+        # Check if wget is already installed, if exists then return 1
+        if command -v wget > /dev/null 2>&1; then
+            echo "wget is already installed."
+            PRE_INSTALL=1
+        fi
+    install_command: |
+        brew install wget
+    post_install_commands:
+    post_install_message:
+    uninstall_command: |
+        brew uninstall wget
+
+-   name: git
+    description: Distributed version control system
+    category: devops
+    more_info:
+    prequisites:
+    pre_install_command: |
+        # Check if git is already installed, if exists then return 1
+        if command -v git > /dev/null 2>&1; then
+            echo "git is already installed."
+            PRE_INSTALL=1
+        fi
+    install_command: |
+        brew install git
+    post_install_commands:
+    post_install_message:
+    uninstall_command: |
+        brew uninstall git

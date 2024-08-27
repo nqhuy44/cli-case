@@ -46,9 +46,19 @@ list() {
         echo "Tools file not found!"
         return 1
     fi
-    # List all available tools in the tools file
-    yq e ".[].name" "$TOOLSFILE"
-
+    # Extract, sort, and format the tools
+    yq e '.[] | .name + " | " + .category' "$TOOLSFILE" | \
+    sort -t '|' -k2,2 -k1,1 | \
+    awk '
+    BEGIN {
+        FS="|";
+        OFS="|";
+        print "Category", "Tool";
+        print "--------", "----";
+    }
+    {
+        print $2, $1;
+    }' | column -t -s '|'
 }
 
 # Function to install a specific tool
