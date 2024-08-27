@@ -10,26 +10,13 @@ commands=(
 
 prequisites() {
     # Check if yq is installed and ask to install
-    os_type=$(uname)
-    package_manager=""
-    if [ "$os_type" == "Linux" ]; then
-        if command -v apt &>/dev/null; then
-            package_manager="apt"
-        elif command -v yum &>/dev/null; then
-            package_manager="yum"
-        else
-            echo "Unsupported Linux package manager!"
-            exit 1
-        fi
-    elif [ "$os_type" == "Darwin" ]; then
-        if command -v brew &>/dev/null; then
-            package_manager="brew"
-        else
-            echo "Homebrew is not installed on macOS!"
-            exit 1
-        fi
-    else
-        echo "Unsupported operating system!"
+    if [ "$(uname)" != "Darwin" ]; then
+        echo "This script is only supported on macOS!"
+        exit 1
+    fi
+
+    if ! command -v brew &>/dev/null; then
+        echo "Homebrew is not installed on macOS!"
         exit 1
     fi
 
@@ -37,27 +24,11 @@ prequisites() {
         echo "yq is required to run this script. Do you want to install it? (y/n)"
         read -r response
         if [ "$response" == "y" ]; then
-            echo "[*] Installing yq..."
-            case "$package_manager" in
-            apt)
-                if ! sudo apt update && sudo apt install -y yq; then
-                    echo "Failed to install yq using apt."
-                    exit 1
-                fi
-                ;;
-            yum)
-                if ! sudo yum install -y yq; then
-                    echo "Failed to install yq using yum."
-                    exit 1
-                fi
-                ;;
-            brew)
-                if ! brew install yq; then
-                    echo "Failed to install yq using brew."
-                    exit 1
-                fi
-                ;;
-            esac
+            echo "[] Installing yq..."
+            if ! brew install yq; then
+                echo "Failed to install yq using brew."
+                exit 1
+            fi
         else
             echo "yq is required to run this script. Exiting..."
             exit 1
@@ -116,7 +87,7 @@ install() {
 
         echo "The following tools will be installed:"
         for tool in $tools; do
-            echo "- $tool"
+            echo "[] $tool"
         done
 
         echo "Do you want to proceed with the installation? (y/n) "
@@ -138,6 +109,8 @@ install() {
 }
 
 install_tool() {
+    set -e
+
     tool_name="$1"
     tool_info=$(yq e ".[] | select(.name == \"$tool_name\")" "$TOOLSFILE")
 
@@ -152,26 +125,23 @@ install_tool() {
     post_install_command=$(yq e ".[] | select(.name == \"$tool_name\") | .post_install_command" "$TOOLSFILE")
     post_install_message=$(yq e ".[] | select(.name == \"$tool_name\") | .post_install_message" "$TOOLSFILE")
 
+
     # Run before installation commands to check installed packages
-    (
-        eval "$pre_install_command"
-    )
-    test=$?
-    if [ $test -eq 1 ]; then
-        echo "[-] $tool_name is already installed."
+    echo "[*] Installing $tool"
+    PRE_INSTALL=0
+    eval "$pre_install_command"
+    if [ "$PRE_INSTALL" -eq 1 ]; then
+        echo "--> Skip install"
         return 0
-    else
-        echo "[*] Installing $tool"
     fi
+    
+    eval "$install_command"
 
-    # echo "[*] Installing $tool_name..."
-    # eval "$install_command"
-
-    # echo "Running post-installation commands ..."
-    # eval "$post_install_command"
+    echo "- Post-installation ..."
+    eval "$post_install_command"
 
     # echo -e "$post_install_message"
-    # return 0
+    return 0
 }
 
 # Function to uninstall a specific tool
