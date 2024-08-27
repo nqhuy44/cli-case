@@ -197,7 +197,7 @@
 
 -   name: nvm
     description: Node Version Manager
-    category: ide
+    category: devops
     more_info:
     prequisites:
     pre_install_command: |
@@ -392,3 +392,57 @@
     post_install_message:
     uninstall_command: |
         brew uninstall git
+
+-   name: pyenv
+    description: Python Version Manager
+    category: devops
+    more_info:
+    prequisites:
+    pre_install_command: |
+        # Check if pyenv is already installed, if exists then return 1
+        if command -v pyenv > /dev/null 2>&1; then
+            echo "pyenv is already installed."
+            PRE_INSTALL=1
+        fi
+    install_command: |
+        brew install pyenv
+    post_install_commands:
+    post_install_message:
+    uninstall_command: |
+        brew uninstall pyenv
+
+-   name: jq
+    description: Command-line JSON processor
+    category: shell
+    more_info:
+    prequisites:
+    pre_install_command: |
+        # Check if jq is already installed, if exists then return 1
+        if command -v jq > /dev/null 2>&1; then
+            echo "jq is already installed."
+            PRE_INSTALL=1
+        fi
+    install_command: |
+        brew install jq
+    post_install_commands:
+    post_install_message:
+    uninstall_command: |
+        brew uninstall jq
+
+-   name: yq
+    description: Command-line YAML processor
+    category: shell
+    more_info:
+    prequisites:
+    pre_install_command: |
+        # Check if yq is already installed, if exists then return 1
+        if command -v yq > /dev/null 2>&1; then
+            echo "yq is already installed."
+            PRE_INSTALL=1
+        fi
+    install_command: |
+        brew install yq
+    post_install_commands:
+    post_install_message:
+    uninstall_command: |
+        brew uninstall yq
