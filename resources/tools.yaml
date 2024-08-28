@@ -1,0 +1,68 @@
+tools:
+  - name: git
+    category: Dev
+    preqs:
+    cmd_check: |
+      if git --version > /dev/null 2>&1; then
+        echo 1
+      else
+        echo 0
+      fi
+    cmd_install: |
+      brew install git
+    cmd_uninstall: |
+      brew uninstall git
+  
+  - name: nvm
+    category: Dev
+    preqs:
+    cmd_check: |
+      if brew list --formula | grep -q "^nvm\$"; then
+        echo 1
+      else
+        echo 0
+      fi
+    cmd_install: |
+      curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
+    cmd_uninstall: |
+      rm -rf ~/.nvm
+  
+  - name: ohmyzsh
+    category: shell
+    preqs:
+    cmd_check: |
+      if [ -d ~/.oh-my-zsh ]; then
+        echo 1
+      else
+        echo 0
+      fi
+    cmd_install: |
+      sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+    cmd_uninstall: |
+      rm -rf ~/.oh-my-zsh
+  
+  - name: zsh-autosuggestions
+    category: shell
+    preqs:
+    cmd_check: |
+      if [ -d ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions ] || brew list | grep -q zsh-autosuggestions; then
+        echo 1
+      else
+        echo 0
+      fi
+    cmd_install: |
+      brew install zsh-autosuggestions
+
+  - name: just
+    category: Dev
+    preqs:
+    cmd_check: |
+      if just --version > /dev/null 2>&1; then
+        echo 1
+      else
+        echo 0
+      fi
+    cmd_install: |
+      brew install just
+    cmd_uninstall: |
+      brew uninstall just

@@ -1,0 +1,15 @@
+usage: "Usage: cli-case {list|install|uninstall|help} [tool_name]"
+
+commands:
+  - name: list
+    description: |
+      List all available tools
+  - name: install
+    description: |
+      Install the specified tool
+  - name: uninstall
+    description: |
+      Uninstall the specified tool
+  - name: help
+    description: |
+      Show this help message
