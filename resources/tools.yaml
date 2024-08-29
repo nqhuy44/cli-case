@@ -8,25 +8,47 @@ tools:
       else
         echo 0
       fi
-    cmd_install: |
-      brew install git
-    cmd_uninstall: |
-      brew uninstall git
-  
+    cmd_install:
+      brew: |
+        brew install git
+      custom:
+    cmd_uninstall:
+      brew: |
+        brew uninstall git
+
   - name: nvm
     category: Dev
     preqs:
     cmd_check: |
-      if brew list --formula | grep -q "^nvm\$"; then
-        echo 1
+      if [[ "$SHELL" == *"zsh"* ]]; then
+        if zsh -c 'source ~/.zshrc && nvm --version' > /dev/null 2>&1; then
+          echo 1
+        else
+          echo 0
+        fi
       else
-        echo 0
+        if nvm --version > /dev/null 2>&1; then
+          echo 1
+        else
+          echo 0
+        fi
       fi
-    cmd_install: |
-      curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
+    cmd_install:
+      brew:
+      custom: |
+        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+        # Add NVM_DIR to zsh profile if not already present
+        if ! grep -q "NVM_DIR" ~/.zshrc; then
+          echo 'export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"' >> ~/.zshrc
+          echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm' >> ~/.zshrc
+        fi
     cmd_uninstall: |
-      rm -rf ~/.nvm
-  
+      nvm_dir="${NVM_DIR:-~/.nvm}"
+      nvm unload
+      rm -rf "$nvm_dir"
+      # Remove NVM_DIR from zsh profile
+      sed -i '' '/NVM_DIR/d' ~/.zshrc
+
   - name: ohmyzsh
     category: shell
     preqs:
@@ -36,22 +58,34 @@ tools:
       else
         echo 0
       fi
-    cmd_install: |
-      sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-    cmd_uninstall: |
-      rm -rf ~/.oh-my-zsh
-  
+    cmd_install:
+      custom: |
+        sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+    cmd_uninstall:
+      custom: |
+        rm -rf ~/.oh-my-zsh
+
   - name: zsh-autosuggestions
     category: shell
     preqs:
     cmd_check: |
-      if [ -d ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions ] || brew list | grep -q zsh-autosuggestions; then
+      if [ -d ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions ] || brew list --formula | grep -q zsh-autosuggestions; then
         echo 1
       else
         echo 0
       fi
-    cmd_install: |
-      brew install zsh-autosuggestions
+    cmd_install:
+      brew: |
+        brew install zsh-autosuggestions --ignore-dependencies
+        # check and activate zsh-autosuggestions
+        if ! grep -q "zsh-autosuggestions" ~/.zshrc; then
+          echo 'source /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh' >> ~/.zshrc
+        fi
+      custom:
+    cmd_uninstall:
+      brew: |
+        brew uninstall zsh-autosuggestions
+      custom:
 
   - name: just
     category: Dev
@@ -62,7 +96,125 @@ tools:
       else
         echo 0
       fi
-    cmd_install: |
-      brew install just
-    cmd_uninstall: |
-      brew uninstall just
+    cmd_install:
+      brew: |
+        brew install just --ignore-dependencies
+    cmd_uninstall:
+      brew: |
+        brew uninstall just
+
+  # - name: jq
+  #   category: shell
+  #   preqs:
+  #   cmd_check: |
+  #     if jq --version > /dev/null 2>&1; then
+  #       echo 1
+  #     else
+  #       echo 0
+  #     fi
+  #   cmd_install: |
+  #     brew install jq
+  #   cmd_uninstall: |
+  #     brew uninstall jq
+
+  # - name: fzf
+  #   category: shell
+  #   preqs:
+  #   cmd_check: |
+  #     if [ -d ~/.fzf ] || brew list --formula | grep -q fzf; then
+  #       echo 1
+  #     else
+  #       echo 0
+  #     fi
+  #   cmd_install: |
+  #     brew install fzf
+  #   cmd_uninstall: |
+  #     brew uninstall fzf
+
+  # - name: azure-cli
+  #   category: DevOps
+  #   preqs:
+  #   cmd_check: |
+  #     if az --version > /dev/null 2>&1; then
+  #       echo 1
+  #     else
+  #       echo 0
+  #     fi
+  #   cmd_install: |
+  #     brew install azure-cli
+  #   cmd_uninstall: |
+  #     brew uninstall azure-cli
+
+  # - name: kubectl
+  #   category: Kubernetes
+  #   preqs:
+  #   cmd_check: |
+  #     if kubectl version --client > /dev/null 2>&1; then
+  #       echo 1
+  #     else
+  #       echo 0
+  #     fi
+  #   cmd_install: |
+  #     brew install kubectl
+  #   cmd_uninstall: |
+  #     brew uninstall kubectl
+
+  # - name: kubectx
+  #   category: Kubernetes
+  #   preqs:
+  #     - kubectl
+  #   cmd_check: |
+  #     if [ -d ~/.kubectx ] || brew list --formula | grep -q kubectx; then
+  #       echo 1
+  #     else
+  #       echo 0
+  #     fi
+  #   cmd_install: |
+  #     brew install kubectx
+  #   cmd_uninstall: |
+  #     brew uninstall kubectx
+
+  # - name: helm
+  #   category: Kubernetes
+  #   preqs:
+  #   cmd_check: |
+  #     if helm version > /dev/null 2>&1; then
+  #       echo 1
+  #     else
+  #       echo 0
+  #     fi
+  #   cmd_install: |
+  #     brew install helm
+  #   cmd_uninstall: |
+  #     brew uninstall helm
+
+  # - name: helmfile
+  #   category: Kubernetes
+  #   preqs:
+  #     - helm
+  #     - helm-diff
+  #   cmd_check: |
+  #     if helmfile --version > /dev/null 2>&1; then
+  #       echo 1
+  #     else
+  #       echo 0
+  #     fi
+  #   cmd_install: |
+  #     brew install helmfile
+  #   cmd_uninstall: |
+  #     brew uninstall helmfile
+
+  # - name: helm-diff
+  #   category: Kubernetes
+  #   preqs:
+  #     - helm
+  #   cmd_check: |
+  #     if helm plugin list | grep -q "^diff"; then
+  #         echo 1
+  #     else
+  #         echo 0
+  #     fi
+  #   cmd_install: |
+  #     helm plugin install https://github.com/databus23/helm-diff
+  #   cmd_uninstall: |
+  #     helm plugin uninstall diff

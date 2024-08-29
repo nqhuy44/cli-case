@@ -7,6 +7,11 @@ tools=$(yq e '.tools[] | [.category, .name] | @csv' "$CLIC_TOOLS_FILE")
 # Collect the tools in an array
 tool_list=()
 while IFS=, read -r category name; do
+    # Skip tools with the category "lib"
+    if [ "$category" == "lib" ]; then
+        continue
+    fi
+    
     installed=$(check_installed "$name")
     if [ "$installed" == "1" ]; then
         installed="Installed"
@@ -14,7 +19,7 @@ while IFS=, read -r category name; do
         installed="-"
     fi
     tool_list+=("$category,$name,$installed")
-done <<< "$tools"
+done <<<"$tools"
 
 # Sort the tools by category and name
 sorted_tools=$(printf "%s\n" "${tool_list[@]}" | sort -t, -k1,1 -k2,2)

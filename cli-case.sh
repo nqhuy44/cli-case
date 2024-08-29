@@ -22,7 +22,7 @@ help() {
     done
 }
 
-chmod +x "$CLIC_ROOT_DIR/scripts/"*.sh
+chmod +x $CLIC_ROOT_DIR/scripts/*.sh
 
 case "$1" in
 list)
