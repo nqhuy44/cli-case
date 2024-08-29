@@ -1,5 +1,16 @@
 #!/bin/bash
 
+check_exits() {
+    tool_name="$1"
+    # Check if the tool name exists in the tools file
+    tool=$(yq e ".tools[] | select(.name == \"$tool_name\")" "$CLIC_TOOLS_FILE")
+    if [ -z "$tool" ]; then
+        echo 1
+    else
+        echo 0
+    fi
+}
+
 check_installed() {
     tool_name="$1"
     # get command to check from tools file

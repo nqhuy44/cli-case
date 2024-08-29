@@ -1,8 +1,6 @@
 #!/bin/bash
 source "$CLIC_ROOT_DIR/scripts/utils.sh"
 
-echo "file: $CLIC_TOOLS_FILE"
-
 # Read the tools file and extract the tools
 tools=$(yq e '.tools[] | [.category, .name] | @csv' "$CLIC_TOOLS_FILE")
 
