@@ -13,16 +13,10 @@ pipeline {
             steps {
                 script {
                     say.nothing()
+                    say.haha()
+                    say.something('New lib versions v0.0.2')
                 }
             }
-            steps
-                script {
-                    say.haha()
-                }
-            steps
-                script {
-                    say.something("New lib versions v0.0.2")
-                }
         }
     }
 }
