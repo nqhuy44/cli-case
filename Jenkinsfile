@@ -13,7 +13,6 @@ pipeline {
             steps {
                 script {
                     say.nothing()
-                    say.something()
                 }
             }
         }
