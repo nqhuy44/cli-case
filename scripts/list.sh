@@ -21,7 +21,7 @@ while IFS=, read -r category name; do
     tool_list+=("$category,$name,$installed")
 done <<<"$tools"
 
-# Sort the tools by category and name
+# Sort the tools by category and name   
 sorted_tools=$(printf "%s\n" "${tool_list[@]}" | sort -t, -k1,1 -k2,2)
 
 # Print the header

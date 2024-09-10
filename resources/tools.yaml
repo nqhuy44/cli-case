@@ -249,6 +249,7 @@ tools:
     category: DevOps
     preqs:
     cmd_check: |
+      # Check if opentofu is installed by using opentofu --version
       if opentofu --version > /dev/null 2>&1; then
         echo 1
       else
@@ -256,7 +257,7 @@ tools:
       fi
     cmd_install:
       default: |
-        brew install opentofu
+        brew install tofu
       version: |-
         error_handler() {
           echo "Error occurred in script at line: $1"
@@ -277,22 +278,24 @@ tools:
           echo "Failed to download tofu"
           exit 1
         fi
+        
         # untar the package keep directory structure
         echo "-- Extracting package"
         mkdir -p ./$PACKAGE_DIR
         tar -xzf $PACKAGE -C ./$PACKAGE_DIR
         # move the tofu binary to /usr/local/bin
         echo "-- Moving tofu to /usr/local/bin"
-        sudo mv ./$PACKAGE_DIR/tofu /usr/local/bin
-        # add the path to the shell profile
+        sudo cp ./$PACKAGE_DIR/tofu /usr/local/bin/opentofu
+        echo "-- Adding /usr/local/bin to PATH"
         if ! grep -q "/usr/local/bin" ~/.zshrc; then
           echo 'export PATH="/usr/local/bin:$PATH"' >> ~/.zshrc
         fi
         # cleanup
         echo "-- Cleanup"
         rm -rf $PACKAGE $PACKAGE_DIR
-    cmd_uninstall:
-      default: |
+    cmd_uninstall: |
+      if (brew list --formula | grep -q opentofu); then
         brew uninstall opentofu
-      version: |
-        rm -rf /usr/local/bin/tofu
+      else
+        sudo rm -rf /usr/local/bin/opentofu
+      fi
