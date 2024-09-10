@@ -3,7 +3,7 @@ pipeline {
     agent any
     stages {
         stage('Say Hello') {
-            step {
+            steps {
                 script {
                     hello(name: 'Jenkins')
                 }
@@ -11,15 +11,9 @@ pipeline {
         }
         stage('Say Something') {
             steps {
-                step {
-                    script {
-                        say.nothing()
-                    }
-                }
-                step {
-                    script {
-                        say.something()
-                    }
+                script {
+                    say.nothing()
+                    say.something()
                 }
             }
         }
