@@ -18,21 +18,21 @@ check_category() {
 }
 
 # Func to get install method by OS,
-get_install_method() {
-    local tool_name="$1"
-    local package="custom"
-    if $(uname -a | grep -q "Darwin"); then
-        package="brew"
-    elif $(uname -a | grep -q "Linux"); then
-        package="apt"
-    fi
-    local method_install=$(yq e ".tools[] | select(.name == \"$tool_name\") | .cmd_install.$package" "$CLIC_TOOLS_FILE")
-    if  [ -z "$method_install" ]; then
-        echo "custom"
-    else
-        echo "$package"
-    fi
-}
+# get_install_method() {
+#     local tool_name="$1"
+#     local package="custom"
+#     if $(uname -a | grep -q "Darwin"); then
+#         package="brew"
+#     elif $(uname -a | grep -q "Linux"); then
+#         package="apt"
+#     fi
+#     local method_install=$(yq e ".tools[] | select(.name == \"$tool_name\") | .cmd_install.$package" "$CLIC_TOOLS_FILE")
+#     if  [ -z "$method_install" ]; then
+#         echo "custom"
+#     else
+#         echo "$package"
+#     fi
+# }
 
 # Func to check if a tool is installed
 check_installed() {
@@ -59,8 +59,8 @@ check_preqs() {
     for tool in $requires; do
         local installed=$(check_installed "$tool")
         if [ "$installed" == "0" ]; then
-            echo "$tool is not installed"
-            return 1
+            echo 1
+            return
         fi
     done
 }

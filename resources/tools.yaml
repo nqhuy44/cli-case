@@ -9,11 +9,10 @@ tools:
         echo 0
       fi
     cmd_install:
-      brew: |
+      default: |
         brew install git
-      custom:
     cmd_uninstall:
-      brew: |
+      default: |
         brew uninstall git
 
   - name: nvm
@@ -34,20 +33,20 @@ tools:
         fi
       fi
     cmd_install:
-      brew:
-      custom: |
+      default: |
         curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
         # Add NVM_DIR to zsh profile if not already present
         if ! grep -q "NVM_DIR" ~/.zshrc; then
           echo 'export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"' >> ~/.zshrc
           echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm' >> ~/.zshrc
         fi
-    cmd_uninstall: |
-      nvm_dir="${NVM_DIR:-~/.nvm}"
-      nvm unload
-      rm -rf "$nvm_dir"
-      # Remove NVM_DIR from zsh profile
-      sed -i '' '/NVM_DIR/d' ~/.zshrc
+    cmd_uninstall: 
+      default: |
+        nvm_dir="${NVM_DIR:-~/.nvm}"
+        nvm unload
+        rm -rf "$nvm_dir"
+        # Remove NVM_DIR from zsh profile
+        sed -i '' '/NVM_DIR/d' ~/.zshrc
 
   - name: ohmyzsh
     category: shell
@@ -59,10 +58,10 @@ tools:
         echo 0
       fi
     cmd_install:
-      custom: |
+      default: |
         sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
     cmd_uninstall:
-      custom: |
+      default: |
         rm -rf ~/.oh-my-zsh
 
   - name: zsh-autosuggestions
@@ -75,17 +74,15 @@ tools:
         echo 0
       fi
     cmd_install:
-      brew: |
+      default: |
         brew install zsh-autosuggestions --ignore-dependencies
         # check and activate zsh-autosuggestions
         if ! grep -q "zsh-autosuggestions" ~/.zshrc; then
           echo 'source /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh' >> ~/.zshrc
         fi
-      custom:
     cmd_uninstall:
-      brew: |
+      default: |
         brew uninstall zsh-autosuggestions
-      custom:
 
   - name: just
     category: Dev
@@ -97,10 +94,10 @@ tools:
         echo 0
       fi
     cmd_install:
-      brew: |
+      default: |
         brew install just --ignore-dependencies
     cmd_uninstall:
-      brew: |
+      default: |
         brew uninstall just
 
   # - name: jq
@@ -218,3 +215,84 @@ tools:
   #     helm plugin install https://github.com/databus23/helm-diff
   #   cmd_uninstall: |
   #     helm plugin uninstall diff
+  - name: wget
+    category: ultis
+    preqs:
+    cmd_check: |
+      if wget --version > /dev/null 2>&1; then
+        echo 1
+      else
+        echo 0
+      fi
+    cmd_install:
+      default: |
+        brew install wget
+    cmd_uninstall:
+      default: |
+        brew uninstall wget
+
+  - name: aws-cli
+    category: DevOps
+    preqs:
+    cmd_check: |
+      if aws --version > /dev/null 2>&1; then
+        echo 1
+      else
+        echo 0
+      fi
+    cmd_install:
+      default: |
+        curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
+        installer -pkg ./AWSCLIV2.pkg -target /
+
+  - name: opentofu
+    category: DevOps
+    preqs:
+    cmd_check: |
+      if opentofu --version > /dev/null 2>&1; then
+        echo 1
+      else
+        echo 0
+      fi
+    cmd_install:
+      default: |
+        brew install opentofu
+      version: |-
+        error_handler() {
+          echo "Error occurred in script at line: $1"
+            exit 1
+        }
+
+        # Trap errors and call error_handler
+        trap 'error_handler $LINENO' ERR
+
+        OS=$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | tr '[:upper:]' '[:lower:]')
+        PACKAGE="tofu_${VERSION}_${OS}.tar.gz"
+        PACKAGE_DIR="tofu_${VERSION}_${OS}"
+        URL="https://github.com/opentofu/opentofu/releases/download/v$VERSION/$PACKAGE"
+        echo $URL
+        curl -LO $URL
+
+        if [ $? -ne 0 ]; then
+          echo "Failed to download tofu"
+          exit 1
+        fi
+        # untar the package keep directory structure
+        echo "-- Extracting package"
+        mkdir -p ./$PACKAGE_DIR
+        tar -xzf $PACKAGE -C ./$PACKAGE_DIR
+        # move the tofu binary to /usr/local/bin
+        echo "-- Moving tofu to /usr/local/bin"
+        sudo mv ./$PACKAGE_DIR/tofu /usr/local/bin
+        # add the path to the shell profile
+        if ! grep -q "/usr/local/bin" ~/.zshrc; then
+          echo 'export PATH="/usr/local/bin:$PATH"' >> ~/.zshrc
+        fi
+        # cleanup
+        echo "-- Cleanup"
+        rm -rf $PACKAGE $PACKAGE_DIR
+    cmd_uninstall:
+      default: |
+        brew uninstall opentofu
+      version: |
+        rm -rf /usr/local/bin/tofu

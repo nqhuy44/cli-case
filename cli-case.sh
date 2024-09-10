@@ -29,7 +29,7 @@ list)
     "$CLIC_ROOT_DIR/scripts/list.sh"
     ;;
 install)
-    "$CLIC_ROOT_DIR/scripts/install.sh" "$2"
+    "$CLIC_ROOT_DIR/scripts/install.sh" "$2" "$3"
     ;;
 uninstall)
     "$CLIC_ROOT_DIR/scripts/uninstall.sh" "$2"
