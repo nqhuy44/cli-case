@@ -1,4 +1,4 @@
-@Library('jenkins-shared-lib-test@v0.0.2') _
+@Library('jenkins-shared-lib-test@v0.0.4') _
 pipeline {
     agent any
     stages {
@@ -14,7 +14,7 @@ pipeline {
                 script {
                     say.nothing()
                     say.haha()
-                    say.something('New lib versions v0.0.2')
+                    say.something('SOMETHING')
                 }
             }
         }
