@@ -171,50 +171,63 @@ tools:
   #   cmd_uninstall: |
   #     brew uninstall kubectx
 
-  # - name: helm
-  #   category: Kubernetes
-  #   preqs:
-  #   cmd_check: |
-  #     if helm version > /dev/null 2>&1; then
-  #       echo 1
-  #     else
-  #       echo 0
-  #     fi
-  #   cmd_install: |
-  #     brew install helm
-  #   cmd_uninstall: |
-  #     brew uninstall helm
+  - name: helm
+    category: Kubernetes
+    preqs:
+    cmd_check: |
+      if helm version > /dev/null 2>&1; then
+        echo 1
+      else
+        echo 0
+      fi
+    cmd_install:
+      default: |
+        brew install helm
+      version:
+    cmd_uninstall: 
+      default: |
+        brew uninstall helm
+      versions:
 
-  # - name: helmfile
-  #   category: Kubernetes
-  #   preqs:
-  #     - helm
-  #     - helm-diff
-  #   cmd_check: |
-  #     if helmfile --version > /dev/null 2>&1; then
-  #       echo 1
-  #     else
-  #       echo 0
-  #     fi
-  #   cmd_install: |
-  #     brew install helmfile
-  #   cmd_uninstall: |
-  #     brew uninstall helmfile
+  - name: helmfile
+    category: Kubernetes
+    preqs:
+      - helm
+      - helm-diff
+    cmd_check: |
+      if helmfile --version > /dev/null 2>&1; then
+        echo 1
+      else
+        echo 0
+      fi
+    cmd_install: 
+      default: |
+        brew install helmfile
+      version:
+    cmd_uninstall: 
+      default: |
+        brew uninstall helmfile
+      versions:
 
-  # - name: helm-diff
-  #   category: Kubernetes
-  #   preqs:
-  #     - helm
-  #   cmd_check: |
-  #     if helm plugin list | grep -q "^diff"; then
-  #         echo 1
-  #     else
-  #         echo 0
-  #     fi
-  #   cmd_install: |
-  #     helm plugin install https://github.com/databus23/helm-diff
-  #   cmd_uninstall: |
-  #     helm plugin uninstall diff
+  - name: helm-diff
+    category: Kubernetes
+    preqs:
+      - helm
+    cmd_check: |
+      if helm plugin list | grep -q "^diff"; then
+          echo 1
+      else
+          echo 0
+      fi
+    cmd_install: 
+      default: |
+        helm plugin install https://github.com/databus23/helm-diff
+      version:
+    cmd_uninstall: 
+      default: |
+        helm plugin uninstall diff
+      version:
+
   - name: wget
     category: ultis
     preqs:

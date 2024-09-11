@@ -10,11 +10,11 @@ export CLIC_HELP_FILE="$CLIC_ROOT_DIR/resources/help.yaml"
 # source "$CLIC_ROOT_DIR/scripts/uninstall.sh"
 
 help() {
-    usage=$(yq e '.usage' "$HELP_FILE")
+    usage=$(yq e '.usage' "$CLIC_HELP_FILE")
     echo "$usage"
     echo
 
-    commands=$(yq e '.commands' "$HELP_FILE")
+    commands=$(yq e '.commands' "$CLIC_HELP_FILE")
     echo "$commands" | yq e -o=json '.' | yq e -N '.[]' | while IFS= read -r command; do
         name=$(echo "$command" | yq e '.name' -)
         description=$(echo "$command" | yq e '.description' -)
