@@ -312,3 +312,19 @@ tools:
       else
         sudo rm -rf /usr/local/bin/opentofu
       fi
+
+  - name: minikube
+    category: Kubernetes
+    preqs:
+    cmd_check: |
+      if minikube version > /dev/null 2>&1; then
+        echo 1
+      else
+        echo 0
+      fi
+    cmd_install:
+      default: |
+        brew install minikube
+    cmd_uninstall:
+      default: |
+        brew uninstall minikube
